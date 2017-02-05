@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:camel="http://camel.apache.org/schema/spring"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+       http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.0.xsd">
+
+	<camelContext id="camel" xmlns="http://camel.apache.org/schema/spring">
+		<package>com.ingestion.services</package>
+		
+		<!-- Creates a route to consume messages from a queue -->
+		<route id="Message-Consumer">
+			<from uri="jms:queueName" />
+			<bean method="consumeMessage" ref="consumer" />
+		</route>
+
+	</camelContext>
+
+	<!-- lets configure the default ActiveMQ broker URL -->
+    <bean id="jms" class="org.apache.camel.component.jms.JmsComponent">
+		<property name="connectionFactory">
+			<bean id="jmsConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+				<property name="brokerURL" value="tcp://localhost:61616" />
+				<property name="userName" value="admin" />
+				<property name="password" value="admin" />
+			</bean>
+		</property>
+	</bean> 
+
+	<bean id="startup" class="com.ingestion.services.Startup"
+		init-method="init" />
+		
+	<!-- Configuration for consumer class -->
+	<bean id="consumer" class="com.ingestion.services.Consumer" />
+</beans>

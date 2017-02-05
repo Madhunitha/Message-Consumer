@@ -1,0 +1,1 @@
+This example shows how to create a simple application using Spring, Camel and ActiveMQ and consume messages from a queue
